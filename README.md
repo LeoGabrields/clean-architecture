@@ -2,15 +2,8 @@
 
 A new Flutter project.
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Caso de sucesso
+1. ✅ Sistema valida os dados
+2. ✅ Sistema faz uma requisição para a URL da API de login
+3. Sistema valida os dados recebidos da API
+4. Sistema entrega os dados da Conta do usuário
