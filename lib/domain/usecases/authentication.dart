@@ -12,11 +12,4 @@ class AuthenticationParams {
     required this.email,
     required this.secret,
   });
-
-  Map<String, dynamic> toMap() {
-    return <String, dynamic>{
-      'email': email,
-      'password': secret,
-    };
-  }
 }
