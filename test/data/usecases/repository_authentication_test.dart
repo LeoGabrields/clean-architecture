@@ -1,10 +1,10 @@
-import 'package:clean_architecture/data/http/http.dart';
-import 'package:clean_architecture/domain/helpers/domain_error.dart';
 import 'package:faker/faker.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
-import 'package:clean_architecture/data/usecases/usecases.dart';
+import 'package:clean_architecture/data/http/http.dart';
+import 'package:clean_architecture/domain/helpers/helpers.dart';
+import 'package:clean_architecture/data/repository/repository.dart';
 import 'package:clean_architecture/domain/usecases/usecases.dart';
 
 class HttpCLientSpy extends Mock implements HttpClient {}
@@ -12,7 +12,7 @@ class HttpCLientSpy extends Mock implements HttpClient {}
 void main() {
   final httpClient = HttpCLientSpy();
   final url = faker.internet.httpUrl();
-  final sut = RemoteAuthentication(httpClient: httpClient, url: url);
+  final sut = RepositoryAuthentication(httpClient: httpClient, url: url);
   final params = AuthenticationParams(
       email: faker.internet.email(), secret: faker.internet.password());
 
@@ -53,6 +53,17 @@ void main() {
       sut.auth(params);
     } catch (e) {
       expect(e, throwsA(DomainError.unexpected));
+    }
+  });
+  test('Should throw InvalidCredentialsError if HttpClient returns 401',
+      () async {
+    when(httpClient.request(url: '', method: '', body: anyNamed('body')))
+        .thenThrow(HttpError.unauthorized);
+
+    try {
+      sut.auth(params);
+    } catch (e) {
+      expect(e, throwsA(DomainError.invalidCredentials));
     }
   });
 }
