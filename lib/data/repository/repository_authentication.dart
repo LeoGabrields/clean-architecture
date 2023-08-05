@@ -6,12 +6,13 @@ import '../../domain/usecases/usecases.dart';
 
 import '../http/http.dart';
 
-class RepositoryAuthentication {
+class RepositoryAuthentication implements Authentication {
   final HttpClient httpClient;
   final String url;
 
   RepositoryAuthentication({required this.httpClient, required this.url});
 
+  @override
   Future<AccountEntity> auth(AuthenticationParams params) async {
     final body = RemoteAuthenticationParams.fromDomain(params).toMap();
     try {
