@@ -9,7 +9,11 @@ class HttpAdapter {
     this.client,
   );
   Future<void> request(Uri url, String method) async {
-    await client.post(url);
+    final headers = {
+      'content-type': 'application/json',
+      'accept': 'application/json'
+    };
+    await client.post(url, headers: headers);
   }
 }
 
@@ -21,11 +25,16 @@ void main() {
       final client = ClientSpy();
       final sut = HttpAdapter(client);
       final url = Uri.parse(faker.internet.httpUrl());
+      final headers = {
+        'content-type': 'application/json',
+        'accept': 'application/json'
+      };
 
-      when(() => client.post(url)).thenAnswer((_) async => Response('{}', 200));
+      when(() => client.post(url, headers: headers))
+          .thenAnswer((_) async => Response('{}', 200));
       await sut.request(url, 'post');
 
-      verify(() => client.post(url));
+      verify(() => client.post(url, headers: headers));
     });
   });
 }
