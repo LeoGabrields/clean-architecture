@@ -19,7 +19,7 @@ class HttpAdapter {
       'content-type': 'application/json',
       'accept': 'application/json'
     };
-    await client.post(url, headers: headers, body: jsonEncode(body));
+    await client.post(url, headers: headers, body: body);
   }
 }
 
@@ -33,11 +33,12 @@ void main() {
     'content-type': 'application/json',
     'accept': 'application/json'
   };
-  const body = '{"any_key":"any_value"}';
+
+  final body = jsonEncode('{"any_key":"any_value"}');
 
   group('post', () {
     test('Should call post with correct values', () async {
-      when(() => client.post(url, headers: headers, body: jsonEncode(body)))
+      when(() => client.post(url, headers: headers, body: body))
           .thenAnswer((_) async => Response('{}', 200));
 
       await sut.request(
@@ -50,7 +51,24 @@ void main() {
         () => client.post(
           url,
           headers: headers,
-          body: jsonEncode(body),
+          body: body,
+        ),
+      );
+    });
+
+    test('Should call post without body', () async {
+      when(() => client.post(url, headers: headers))
+          .thenAnswer((_) async => Response('{}', 200));
+
+      await sut.request(
+        url: url,
+        method: 'post',
+      );
+
+      verify(
+        () => client.post(
+          url,
+          headers: any(named: 'headers'),
         ),
       );
     });
