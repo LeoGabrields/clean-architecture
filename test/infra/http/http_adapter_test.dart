@@ -1,25 +1,31 @@
 import 'dart:convert';
 
+import 'package:clean_architecture/data/http/http.dart';
 import 'package:faker/faker.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart';
 import 'package:mocktail/mocktail.dart';
 
-class HttpAdapter {
+class HttpAdapter implements HttpClient {
   final Client client;
   HttpAdapter(
     this.client,
   );
-  Future<void> request({
-    required url,
+
+  @override
+  Future<Map> request({
+    required String url,
     required String method,
-    String? body,
+    Map? body,
   }) async {
     final headers = {
       'content-type': 'application/json',
       'accept': 'application/json'
     };
-    await client.post(url, headers: headers, body: body);
+    final jsonBody = body != null ? jsonEncode(body) : null;
+    final response =
+        await client.post(Uri.parse(url), headers: headers, body: jsonBody);
+    return jsonDecode(response.body);
   }
 }
 
@@ -28,36 +34,37 @@ class ClientSpy extends Mock implements Client {}
 void main() {
   final client = ClientSpy();
   final sut = HttpAdapter(client);
-  final url = Uri.parse(faker.internet.httpUrl());
+  final url = faker.internet.httpUrl();
+  final uri = Uri.parse(url);
   final headers = {
     'content-type': 'application/json',
     'accept': 'application/json'
   };
 
-  final body = jsonEncode('{"any_key":"any_value"}');
+  const jsonBody = '{"any_key":"any_value"}';
 
   group('post', () {
     test('Should call post with correct values', () async {
-      when(() => client.post(url, headers: headers, body: body))
+      when(() => client.post(uri, headers: headers, body: jsonBody))
           .thenAnswer((_) async => Response('{}', 200));
 
       await sut.request(
         url: url,
         method: 'post',
-        body: body,
+        body: {"any_key": "any_value"},
       );
 
       verify(
         () => client.post(
-          url,
+          uri,
           headers: headers,
-          body: body,
+          body: jsonBody,
         ),
       );
     });
 
     test('Should call post without body', () async {
-      when(() => client.post(url, headers: headers))
+      when(() => client.post(uri, headers: headers))
           .thenAnswer((_) async => Response('{}', 200));
 
       await sut.request(
@@ -67,10 +74,19 @@ void main() {
 
       verify(
         () => client.post(
-          url,
+          uri,
           headers: any(named: 'headers'),
         ),
       );
+    });
+
+    test('Should return data if post returns 200', () async {
+      when(() => client.post(uri, headers: headers))
+          .thenAnswer((_) async => Response('{}', 200));
+
+      final response = await sut.request(url: url, method: 'post');
+
+      expect(response, {});
     });
   });
 }

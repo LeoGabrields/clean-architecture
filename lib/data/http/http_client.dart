@@ -1,7 +1,7 @@
 abstract class HttpClient {
   Future<Map> request({
-    String url,
-    String method,
+    required String url,
+    required String method,
     Map? body,
   });
 }

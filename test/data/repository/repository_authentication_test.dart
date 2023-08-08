@@ -53,6 +53,7 @@ void main() {
 
     expect(future, throwsA(DomainError.unexpected));
   });
+
   test('Should throw UnexpectedError if HttpClient returns 500', () async {
     when(
       () => httpClient.request(
@@ -66,6 +67,7 @@ void main() {
 
     expect(future, throwsA(DomainError.unexpected));
   });
+
   test('Should throw InvalidCredentialsError if HttpClient returns 401',
       () async {
     when(
@@ -80,6 +82,7 @@ void main() {
 
     expect(future, throwsA(DomainError.invalidCredentials));
   });
+
   test('Should return an Account if HttpClient returns 200', () async {
     final accessToken = faker.guid.guid();
     when(() =>
