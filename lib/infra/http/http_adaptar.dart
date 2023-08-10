@@ -23,12 +23,16 @@ class HttpAdapter implements HttpClient {
     };
     final jsonBody = body != null ? jsonEncode(body) : null;
     var response = Response('', 500);
-    if (method == 'post') {
-      response =
-          await client.post(Uri.parse(url), headers: headers, body: jsonBody);
-    }
+    try {
+      if (method == 'post') {
+        response =
+            await client.post(Uri.parse(url), headers: headers, body: jsonBody);
+      }
 
-    return _handleResponse(response);
+      return _handleResponse(response);
+    } catch (e) {
+      throw HttpError.serverError;
+    }
   }
 
   Map? _handleResponse(Response response) {
