@@ -20,6 +20,13 @@ void main() {
 
   const jsonBody = '{"any_key":"any_value"}';
 
+  group('shared', () {
+    test('Should throw ServerError if invalid method is provided', () async {
+      final future = sut.request(url: url, method: 'invalid_method');
+
+      expect(future, throwsA(HttpError.serverError));
+    });
+  });
   group('post', () {
     When mockRequest() => when(() => client.post(uri,
         headers: any(named: 'headers'), body: any(named: 'body')));
