@@ -24,7 +24,7 @@ class RepositoryAuthentication implements Authentication {
       if (httpResponse != null) {
         return RemoteAccountModel.fromJson(httpResponse).toEntity();
       } else {
-        throw HttpError.unauthorized;
+        throw HttpError.invalidData;
       }
     } on HttpError catch (error) {
       throw error == HttpError.unauthorized
