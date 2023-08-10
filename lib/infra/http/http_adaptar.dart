@@ -12,7 +12,7 @@ class HttpAdapter implements HttpClient {
   );
 
   @override
-  Future<Map> request({
+  Future<Map?> request({
     required String url,
     required String method,
     Map? body,
@@ -24,9 +24,16 @@ class HttpAdapter implements HttpClient {
     final jsonBody = body != null ? jsonEncode(body) : null;
     final response =
         await client.post(Uri.parse(url), headers: headers, body: jsonBody);
+    return _handleResponse(response);
+  }
+
+  Map? _handleResponse(Response response) {
     if (response.statusCode == 200) {
       return response.body.isNotEmpty ? jsonDecode(response.body) : {};
+    } else if (response.statusCode == 204) {
+      return null;
+    } else {
+      throw HttpError.badRequest;
     }
-    return {};
   }
 }

@@ -21,7 +21,11 @@ class RepositoryAuthentication implements Authentication {
         method: 'post',
         body: body,
       );
-      return RemoteAccountModel.fromJson(httpResponse).toEntity();
+      if (httpResponse != null) {
+        return RemoteAccountModel.fromJson(httpResponse).toEntity();
+      } else {
+        throw HttpError.unauthorized;
+      }
     } on HttpError catch (error) {
       throw error == HttpError.unauthorized
           ? DomainError.invalidCredentials
